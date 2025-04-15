@@ -16,7 +16,8 @@ public class MerchantController {
     private MerchantService merchantService;
 
     @PostMapping("/save")
-    public Merchant saveMerchant(@RequestBody Merchant merchant){
+    public ResponseDTO saveMerchant(@RequestBody Merchant merchant){
+        ResponseDTO responseDto=new ResponseDTO();
          return merchantService.saveMerchant(merchant);
     }
 
@@ -31,9 +32,9 @@ public class MerchantController {
         return ResponseEntity.ok(updatedMerchant).getBody();
     }
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long id){
-        merchantService.deleteById(id);
-        return ResponseEntity.ok("Deleted Successfully");
-
+    public ResponseDTO deleteById(@PathVariable Long id){
+        ResponseDto responseDto=new ResponseDTO();
+        return merchantService.deleteById(id);
+      
     }
 }
