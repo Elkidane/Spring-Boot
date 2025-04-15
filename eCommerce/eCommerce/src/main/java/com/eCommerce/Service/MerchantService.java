@@ -2,11 +2,11 @@ package com.eCommerce.Service;
 
 import com.eCommerce.Model.Merchant;
 import com.eCommerce.Repository.MerchantRepository;
+import com.eCommerce.ResponseDTO.ResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.util.Optional;
 
 @Service
@@ -14,8 +14,23 @@ public class MerchantService {
     @Autowired
     private MerchantRepository merchantRepository;
 
-    public Merchant saveMerchant(Merchant merchant){
-        return merchantRepository.save(merchant);
+    public ResponseDto saveMerchant(Merchant merchant){
+        ResponseDto responseDto = new ResponseDto();
+
+        try{
+        if(merchant != null || merchant.getFullName() != null || merchant.getFullName().trim().isEmpty()){
+            merchantRepository.save(merchant);
+           responseDto.setMessage("Merchant saved successfully");
+           responseDto.setStatus(true);
+        }else{
+            responseDto.setMessage("Cannot save Merchant. Check your input");
+            responseDto.setStatus(false);
+    }}catch (Exception e){
+            System.out.println("Error" + e);
+            responseDto.setMessage("An error occurred.");
+            responseDto.setStatus(false);
+        }
+        return responseDto;
     }
     public Merchant updateMerchant(Long id, Merchant merchantDetails){
         return merchantRepository.findById(id).map(merchant -> {
@@ -28,16 +43,22 @@ public class MerchantService {
     public Optional<Merchant> getMerchantById(Long id){
         return merchantRepository.findById(id);
     }
-    public void deleteById(Long id){
+    public ResponseDto deleteById(Long id){
+        ResponseDto responseDto=new ResponseDto();
         try{
             if(merchantRepository.existsById(id)){
                 merchantRepository.deleteById(id);
+                responseDto.setMessage("Deleted successfully");
+                responseDto.setStatus(true);
             }else{
-                System.out.println("Merchant with id" + id +"not found");
+                responseDto.setStatus(false);
+                responseDto.setMessage("Merchant with id" + id +"not found");
             }
         }catch (Exception e){
             System.out.println("Error " +e);
+            responseDto.setMessage("An error occurred");
+            responseDto.setStatus(true);
         }
-
+         return responseDto;
     }
 }

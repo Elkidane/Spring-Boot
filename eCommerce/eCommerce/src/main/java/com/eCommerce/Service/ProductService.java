@@ -2,6 +2,7 @@ package com.eCommerce.Service;
 
 import com.eCommerce.Model.Product;
 import com.eCommerce.Repository.ProductRepository;
+import com.eCommerce.ResponseDTO.ResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,27 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Product saveProduct(Product product){
-        return productRepository.save(product);
+    public ResponseDto saveProduct(Product product){
+        ResponseDto responseDto = new ResponseDto();
+try {
+
+
+       if (product != null && product.getName() != null && !product.getName().trim().isEmpty()){
+           productRepository.save(product);
+        responseDto.setMessage("Product saved successfully");
+        responseDto.setStatus(true);
+       }
+       else{
+           responseDto.setMessage("cannot save product. Check your input");
+           responseDto.setStatus(false);
+
+       }}catch (Exception e){
+    System.out.println("Error " +e);
+    responseDto.setMessage("An error occurred while saving product");
+    responseDto.setStatus(false);
+       }
+        return responseDto;
+
     }
 
     public Optional<Product> getById(Long id){
@@ -38,8 +58,21 @@ public class ProductService {
    }
 
    public void deleteProduct(Long id){
-        productRepository.deleteById(id);
-   }
+        Optional<Product> product = productRepository.findById(id);
+        ResponseDto responseDto = new ResponseDto();
 
-
+          try{
+           if(product.isPresent()){
+               productRepository.deleteById(id);
+               responseDto.setMessage("Product deleted successfully");
+               responseDto.setStatus(true);
+        }else{
+              responseDto.setMessage("Product not found");
+              responseDto.setStatus(false);
+       }}catch (Exception e){
+              System.out.println("Error" +e);
+              responseDto.setStatus(false);
+             responseDto.setMessage("An error ");
+    }
+      }
 }
